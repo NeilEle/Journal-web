@@ -16,6 +16,7 @@ const HUMORES = [
 
 function Diario() {
   const [fechaHoy]               = useState(dayjs().format('YYYY-MM-DD'))
+  const [titulo, setTitulo]      = useState('')
   const [contenido, setContenido]= useState('')
   const [humor, setHumor]        = useState('bien')
   const [guardado, setGuardado]  = useState(false)
@@ -32,6 +33,7 @@ function Diario() {
       .where('fecha').equals(fechaHoy)
       .first()
     if (entrada) {
+      setTitulo(entrada.titulo || '')
       setContenido(entrada.contenido)
       setHumor(entrada.humor)
       setGuardado(true)
@@ -49,9 +51,9 @@ function Diario() {
       .where('fecha').equals(fechaHoy)
       .first()
     if (existente) {
-      await db.entradas.update(existente.id, { contenido, humor })
+      await db.entradas.update(existente.id, { titulo, contenido, humor })
     } else {
-      await db.entradas.add({ fecha: fechaHoy, contenido, humor })
+      await db.entradas.add({ fecha: fechaHoy, titulo, contenido, humor })
     }
     setGuardado(true)
     cargarEntradas()
@@ -63,7 +65,6 @@ function Diario() {
   return (
     <div className="max-w-2xl mx-auto">
 
-      {/* Encabezado */}
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-amber-900">📖 Diario</h2>
         <p className="text-amber-500 capitalize">
@@ -82,7 +83,16 @@ function Diario() {
           )}
         </div>
 
-        {/* Selector de humor */}
+        {/* Título */}
+        <input
+          type="text"
+          placeholder="Título de la entrada..."
+          value={titulo}
+          onChange={e => { setTitulo(e.target.value); setGuardado(false) }}
+          className="w-full border border-amber-200 rounded-xl px-4 py-2 text-sm font-semibold text-amber-900 placeholder-amber-300 mb-3 focus:outline-none focus:ring-2 focus:ring-amber-300"
+        />
+
+        {/* Humor */}
         <div className="mb-4">
           <p className="text-xs text-amber-500 font-medium mb-2">¿Cómo te sientes hoy?</p>
           <div className="flex gap-2">
@@ -102,7 +112,7 @@ function Diario() {
           </div>
         </div>
 
-        {/* Área de texto */}
+        {/* Contenido */}
         <textarea
           value={contenido}
           onChange={e => { setContenido(e.target.value); setGuardado(false) }}
@@ -144,11 +154,11 @@ function Diario() {
                     <div className="flex items-center gap-3">
                       <span className="text-xl">{emojiHumor(entrada.humor)}</span>
                       <div className="text-left">
-                        <p className="font-medium text-amber-900 text-sm capitalize">
-                          {dayjs(entrada.fecha).format('dddd, D [de] MMMM')}
+                        <p className="font-semibold text-amber-900 text-sm">
+                          {entrada.titulo || 'Sin título'}
                         </p>
-                        <p className="text-xs text-amber-400">
-                          {entrada.contenido.slice(0, 50)}{entrada.contenido.length > 50 ? '...' : ''}
+                        <p className="text-xs text-amber-400 capitalize">
+                          {dayjs(entrada.fecha).format('dddd, D [de] MMMM [de] YYYY')}
                         </p>
                       </div>
                     </div>

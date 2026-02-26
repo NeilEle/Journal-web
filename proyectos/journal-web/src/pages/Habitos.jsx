@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import dayjs from 'dayjs'
 import 'dayjs/locale/es'
-import { Plus, X, Check } from 'lucide-react'
+import { Plus, Check } from 'lucide-react'
 import { db } from '../db/database'
 
 dayjs.locale('es')
@@ -137,17 +137,20 @@ function Habitos() {
                   {/* Nombre del hábito */}
                   <td className="px-4 py-2">
                     <div className="flex items-center gap-2">
-                      <div className={`w-3 h-3 rounded-full ${habito.color}`} />
-                      <span className="font-medium text-amber-900 truncate max-w-28">
-                        {habito.nombre}
-                      </span>
-                      <button
-                        onClick={() => eliminarHabito(habito.id)}
-                        className="ml-auto text-amber-200 hover:text-red-400 transition-all"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
+  <div className={`w-3 h-3 rounded-full ${habito.color}`} />
+  <span className="font-medium text-amber-900 truncate max-w-28">
+    {habito.nombre}
+  </span>
+  <button
+    onClick={() => {
+      const confirmar = window.confirm(`¿Seguro que quieres eliminar "${habito.nombre}"?\n\nRecuerda: ¡los hábitos se construyen con constancia! 💪`)
+      if (confirmar) eliminarHabito(habito.id)
+    }}
+    className="ml-auto text-amber-100 hover:text-red-300 transition-all text-xs px-1"
+  >
+    ···
+  </button>
+</div>
                   </td>
 
                   {/* Días */}

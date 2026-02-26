@@ -27,7 +27,8 @@ function Gastos() {
   const [monto, setMonto]      = useState('')
   const [descripcion, setDesc] = useState('')
   const [categoria, setCat]    = useState(CATEGORIAS[0].nombre)
-  const [fecha, setFecha]      = useState(dayjs().format('YYYY-MM-DD'))
+  const [fecha, setFecha]  = useState(dayjs().format('YYYY-MM-DD'))
+  const [hora, setHora]    = useState(dayjs().format('HH:mm'))
 
   useEffect(() => {
     cargarGastos()
@@ -49,6 +50,7 @@ function Gastos() {
     if (!monto || isNaN(monto) || Number(monto) <= 0) return
     await db.gastos.add({
       fecha,
+      hora,
       monto: Number(monto),
       categoria,
       descripcion,
@@ -150,7 +152,7 @@ function Gastos() {
                   {g.descripcion || g.categoria}
                 </p>
                 <p className="text-xs text-amber-400">
-                  {g.categoria} · {dayjs(g.fecha).format('D MMM')}
+                  {g.categoria} · {dayjs(g.fecha).format('D MMM')} {g.hora ? `· ${g.hora}` : ''}
                 </p>
               </div>
               <span className={`font-bold text-sm ${g.tipo === 'ingreso' ? 'text-green-500' : 'text-red-400'}`}>
@@ -225,12 +227,20 @@ function Gastos() {
             </select>
 
             {/* Fecha */}
-            <input
-              type="date"
-              value={fecha}
-              onChange={e => setFecha(e.target.value)}
-              className="w-full border border-amber-200 rounded-xl px-4 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-amber-300"
-            />
+            <div className="flex gap-2 mb-4"> 
+              <input
+                type="date"
+                value={fecha}
+                onChange={e => setFecha(e.target.value)}
+                className="flex-1 border border-amber-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300"
+              />
+              <input
+                type="time"
+                value={hora}
+                onChange={e => setHora(e.target.value)}
+                className="w-28 border border-amber-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300"
+              />
+</div>
 
             <button
               onClick={agregarGasto}
